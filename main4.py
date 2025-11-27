@@ -65,7 +65,17 @@ async def register_runner(
     file: UploadFile = File(None)
 ):
     try:
-        # สร้าง doc พื้นฐานก่อน
+        image_url = None
+        if file:
+            contents = await file.read()
+            image = Image.open(io.BytesIO(contents))
+            image.thumbnail((1280, 1280))
+            buffer = io.BytesIO()
+            image.save(buffer, format="JPEG", quality=85)
+            buffer.seek(0)
+            result_cloud = cloudinary.uploader.upload(buffer, folder="rwtf_udon/")
+            image_url = result_cloud.get("secure_url")
+
         doc = {
             "full_name": full_name,
             "phone": phone,
@@ -79,20 +89,8 @@ async def register_runner(
             "medical_condition": medical_condition,
             "medications": medications,
             "note": note,
-            "registration_status": False,
-            "image_url": None
+            "image_url": image_url
         }
-
-        # ถ้ามีไฟล์ภาพ ให้ upload และใส่ image_url
-        if file:
-            contents = await file.read()
-            image = Image.open(io.BytesIO(contents))
-            image.thumbnail((1280, 1280))
-            buffer = io.BytesIO()
-            image.save(buffer, format="JPEG", quality=85)
-            buffer.seek(0)
-            result_cloud = cloudinary.uploader.upload(buffer, folder="rwtf_udon/")
-            doc["image_url"] = result_cloud.get("secure_url")
 
         result = collection.insert_one(doc)
         doc["_id"] = str(result.inserted_id)
@@ -143,7 +141,6 @@ async def update_runner(
     medical_condition: str = Form(None),
     medications: str = Form(None),
     note: str = Form(None),
-    registration_status: bool = Form(None),
     file: UploadFile = File(None)
 ):
     try:
@@ -152,7 +149,7 @@ async def update_runner(
         fields = [
             "full_name", "phone", "citizen_id", "reward", "distance",
             "shirt_size", "shirt_status", "bib", "health_package",
-            "medical_condition", "medications", "note", "registration_status"  # เพิ่มตรงนี้
+            "medical_condition", "medications", "note"
         ]
 
         # Add fields if not None

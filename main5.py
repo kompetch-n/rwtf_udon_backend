@@ -65,25 +65,7 @@ async def register_runner(
     file: UploadFile = File(None)
 ):
     try:
-        # สร้าง doc พื้นฐานก่อน
-        doc = {
-            "full_name": full_name,
-            "phone": phone,
-            "citizen_id": citizen_id,
-            "reward": reward,
-            "distance": distance,
-            "shirt_size": shirt_size,
-            "shirt_status": shirt_status,
-            "bib": bib,
-            "health_package": health_package,
-            "medical_condition": medical_condition,
-            "medications": medications,
-            "note": note,
-            "registration_status": False,
-            "image_url": None
-        }
-
-        # ถ้ามีไฟล์ภาพ ให้ upload และใส่ image_url
+        image_url = None
         if file:
             contents = await file.read()
             image = Image.open(io.BytesIO(contents))
@@ -92,7 +74,24 @@ async def register_runner(
             image.save(buffer, format="JPEG", quality=85)
             buffer.seek(0)
             result_cloud = cloudinary.uploader.upload(buffer, folder="rwtf_udon/")
-            doc["image_url"] = result_cloud.get("secure_url")
+            image_url = result_cloud.get("secure_url")
+
+            doc = {
+                "full_name": full_name,
+                "phone": phone,
+                "citizen_id": citizen_id,
+                "reward": reward,
+                "distance": distance,
+                "shirt_size": shirt_size,
+                "shirt_status": shirt_status,
+                "bib": bib,
+                "health_package": health_package,
+                "medical_condition": medical_condition,
+                "medications": medications,
+                "note": note,
+                "registration_status": False,  # เพิ่มค่าเริ่มต้นเป็น False
+                "image_url": image_url
+            }
 
         result = collection.insert_one(doc)
         doc["_id"] = str(result.inserted_id)

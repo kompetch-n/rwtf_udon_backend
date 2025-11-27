@@ -76,21 +76,22 @@ async def register_runner(
             result_cloud = cloudinary.uploader.upload(buffer, folder="rwtf_udon/")
             image_url = result_cloud.get("secure_url")
 
-        doc = {
-            "full_name": full_name,
-            "phone": phone,
-            "citizen_id": citizen_id,
-            "reward": reward,
-            "distance": distance,
-            "shirt_size": shirt_size,
-            "shirt_status": shirt_status,
-            "bib": bib,
-            "health_package": health_package,
-            "medical_condition": medical_condition,
-            "medications": medications,
-            "note": note,
-            "image_url": image_url
-        }
+            doc = {
+                "full_name": full_name,
+                "phone": phone,
+                "citizen_id": citizen_id,
+                "reward": reward,
+                "distance": distance,
+                "shirt_size": shirt_size,
+                "shirt_status": shirt_status,
+                "bib": bib,
+                "health_package": health_package,
+                "medical_condition": medical_condition,
+                "medications": medications,
+                "note": note,
+                "registration_status": False,  # เพิ่มค่าเริ่มต้นเป็น False
+                "image_url": image_url
+            }
 
         result = collection.insert_one(doc)
         doc["_id"] = str(result.inserted_id)
@@ -149,7 +150,7 @@ async def update_runner(
         fields = [
             "full_name", "phone", "citizen_id", "reward", "distance",
             "shirt_size", "shirt_status", "bib", "health_package",
-            "medical_condition", "medications", "note"
+            "medical_condition", "medications", "note", "registration_status"  # เพิ่มตรงนี้
         ]
 
         # Add fields if not None

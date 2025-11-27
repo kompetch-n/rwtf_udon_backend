@@ -142,6 +142,7 @@ async def update_runner(
     medical_condition: str = Form(None),
     medications: str = Form(None),
     note: str = Form(None),
+    registration_status: bool = Form(None),
     file: UploadFile = File(None)
 ):
     try:

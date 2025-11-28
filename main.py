@@ -59,7 +59,7 @@ async def register_runner(
     medical_condition: str = Form(""),
     medications: str = Form(""),
     note: str = Form(""),
-    age: int = Form(None),            # 👈 เพิ่ม age
+    age: str = Form(None),            # 👈 เพิ่ม age
     gender: str = Form(""),           # 👈 เพิ่ม gender
     file: UploadFile = File(None)
 ):
@@ -144,7 +144,7 @@ async def update_runner(
     medications: str = Form(None),
     note: str = Form(None),
     registration_status: bool = Form(None),
-    age: int = Form(None),             # 👈 เพิ่ม
+    age: str = Form(None),             # 👈 เพิ่ม
     gender: str = Form(None),          # 👈 เพิ่ม
     file: UploadFile = File(None)
 ):

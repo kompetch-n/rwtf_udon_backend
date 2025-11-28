@@ -38,6 +38,9 @@ client = MongoClient("mongodb+srv://kompetch:1234@cluster0.0ng1kw5.mongodb.net/?
 db = client["rwtf_udon"]
 collection = db["rwtf_runners"]
 
+# -----------------------------
+# Helper to convert ObjectId
+# -----------------------------
 def serialize_doc(doc):
     doc["_id"] = str(doc["_id"])
     return doc
@@ -59,11 +62,10 @@ async def register_runner(
     medical_condition: str = Form(""),
     medications: str = Form(""),
     note: str = Form(""),
-    age: int = Form(None),            # 👈 เพิ่ม age
-    gender: str = Form(""),           # 👈 เพิ่ม gender
     file: UploadFile = File(None)
 ):
     try:
+        # สร้าง doc พื้นฐานก่อน
         doc = {
             "full_name": full_name,
             "phone": phone,
@@ -77,13 +79,11 @@ async def register_runner(
             "medical_condition": medical_condition,
             "medications": medications,
             "note": note,
-            "age": age,                 # 👈 เพิ่ม
-            "gender": gender,           # 👈 เพิ่ม
             "registration_status": False,
             "image_url": None
         }
 
-        # Upload image
+        # ถ้ามีไฟล์ภาพ ให้ upload และใส่ image_url
         if file:
             contents = await file.read()
             image = Image.open(io.BytesIO(contents))
@@ -144,25 +144,24 @@ async def update_runner(
     medications: str = Form(None),
     note: str = Form(None),
     registration_status: bool = Form(None),
-    age: int = Form(None),             # 👈 เพิ่ม
-    gender: str = Form(None),          # 👈 เพิ่ม
     file: UploadFile = File(None)
 ):
     try:
         update_data = {}
-
+        # List of fields
         fields = [
             "full_name", "phone", "citizen_id", "reward", "distance",
             "shirt_size", "shirt_status", "bib", "health_package",
-            "medical_condition", "medications", "note",
-            "registration_status", "age", "gender"   # 👈 เพิ่ม field ใหม่
+            "medical_condition", "medications", "note", "registration_status"  # เพิ่มตรงนี้
         ]
 
+        # Add fields if not None
         for field in fields:
             value = locals()[field]
             if value is not None:
                 update_data[field] = value
 
+        # Handle file
         if file:
             contents = await file.read()
             image = Image.open(io.BytesIO(contents))
@@ -182,7 +181,7 @@ async def update_runner(
 
     except Exception as e:
         return {"error": str(e)}
-    
+
 # -----------------------------
 # DELETE Runner
 # -----------------------------

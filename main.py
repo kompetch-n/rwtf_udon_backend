@@ -59,8 +59,9 @@ async def register_runner(
     medical_condition: str = Form(""),
     medications: str = Form(""),
     note: str = Form(""),
-    age: str = Form(""),            # 👈 เพิ่ม age
-    gender: str = Form(""),           # 👈 เพิ่ม gender
+    age: str = Form(""),
+    gender: str = Form(""),
+    vip: bool = Form(False),
     file: UploadFile = File(None)
 ):
     try:
@@ -77,8 +78,9 @@ async def register_runner(
             "medical_condition": medical_condition,
             "medications": medications,
             "note": note,
-            "age": age,                 # 👈 เพิ่ม
-            "gender": gender,           # 👈 เพิ่ม
+            "age": age,
+            "gender": gender,
+            "vip": vip,
             "registration_status": False,
             "image_url": None
         }
@@ -144,8 +146,9 @@ async def update_runner(
     medications: str = Form(None),
     note: str = Form(None),
     registration_status: bool = Form(None),
-    age: str = Form(None),             # 👈 เพิ่ม
-    gender: str = Form(None),          # 👈 เพิ่ม
+    age: str = Form(None),
+    gender: str = Form(None),
+    vip: bool = Form(None),
     file: UploadFile = File(None)
 ):
     try:
@@ -155,7 +158,7 @@ async def update_runner(
             "full_name", "phone", "citizen_id", "reward", "distance",
             "shirt_size", "shirt_status", "bib", "health_package",
             "medical_condition", "medications", "note",
-            "registration_status", "age", "gender"   # 👈 เพิ่ม field ใหม่
+            "registration_status", "age", "gender", "vip"
         ]
 
         for field in fields:
